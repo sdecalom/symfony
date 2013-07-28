@@ -8,8 +8,12 @@
  
 {% block sdzblog_body %}
  
-  {# Ici, on inclut la vue #}
-  {% include "SdzBlogBundle:Blog:article.html.twig" %}
+  <h2>{{ article.titre }}</h2>
+  <i>Par {{ article.auteur }}, le {{ article.date|date('d/m/Y') }}</i>
+ 
+  <div class="well">
+    {{ article.contenu }}
+  </div>
  
   <p>
     <a href="{{ path('sdzblog_accueil') }}" class="btn">
@@ -27,3 +31,4 @@
   </p>
  
 {% endblock %}
+ 

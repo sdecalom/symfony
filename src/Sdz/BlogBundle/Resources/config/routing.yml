@@ -23,7 +23,7 @@ sdzblog_voir:
     defaults:  { _controller: SdzBlogBundle:Blog:voir }
     requirements:
         id:  \d+
- 
+
 sdzblog_ajouter:
     path:      /ajouter
     defaults:  { _controller: SdzBlogBundle:Blog:ajouter }

@@ -1,0 +1,41 @@
+##http://localhost/Symfony/web/app_dev.php/blog/hello/ca
+##controleur:DEfaultControleur
+##action index il y a un prefixe qui est definis dans app/config/routing.yml
+#sdz_blog_homepage:
+#    pattern:  /hello/{name}
+#    defaults: { _controller: SdzBlogBundle:Default:index }
+# 
+## http://localhost/Symfony/web/app_dev.php/blog/hello2/ca   
+##controleur:BlogControleur
+##action index
+#sdz_blog_controler:
+#    pattern:  /hello2/{name}
+#    defaults: { _controller: SdzBlogBundle:Blog:index }
+
+sdzblog_accueil:
+    path:      /{page}
+    defaults:  { _controller: SdzBlogBundle:Blog:index, page: 1 }
+    requirements:
+        page:  \d*
+ 
+sdzblog_voir:
+    path:      /article/{id}
+    defaults:  { _controller: SdzBlogBundle:Blog:voir }
+    requirements:
+        id:  \d+
+ 
+sdzblog_ajouter:
+    path:      /ajouter
+    defaults:  { _controller: SdzBlogBundle:Blog:ajouter }
+ 
+sdzblog_modifier:
+    path:      /modifier/{id}
+    defaults:  { _controller: SdzBlogBundle:Blog:modifier }
+    requirements:
+        id:  \d+
+ 
+sdzblog_supprimer:
+    path:      /supprimer/{id}
+    defaults:  { _controller: SdzBlogBundle:Blog:supprimer }
+    requirements:
+        id:  \d+

@@ -45,7 +45,7 @@ class BlogController extends Controller
   
   public function voirAction($id)
   {
-    return new Response("Affichage de l'article d'id : ".$id.".");
+    return new Response("Affichage test de l'article d'id : ".$id.".");
   }
   
 }

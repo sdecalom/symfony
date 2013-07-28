@@ -41,7 +41,11 @@ class BlogController extends Controller
     return $this->redirect($url);
       
      *******************************/
-    
-    
   }
+  
+  public function voirAction($id)
+  {
+    return new Response("Affichage de l'article d'id : ".$id.".");
+  }
+  
 }

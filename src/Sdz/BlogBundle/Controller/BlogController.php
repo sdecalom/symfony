@@ -22,6 +22,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Sdz\BlogBundle\Entity\Article;
 use Sdz\BlogBundle\Form\ArticleType; //a rajouter pour utiliser le formulaire type
 use Sdz\BlogBundle\Form\ArticleEditType; //a rajouter pour utiliser le formulaire type
+use JMS\SecurityExtraBundle\Annotation\Secure;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class BlogController extends Controller {
 
@@ -236,13 +238,23 @@ class BlogController extends Controller {
         $articles = $this->getDoctrine()
                 ->getManager()
                 ->getRepository('SdzBlogBundle:Article')
-                ->getArticles(3, $page); // 3 articles par page : c'est totalement arbitraire !
+                ->getArticles(2, $page); // 3 articles par page : c'est totalement arbitraire !
         // On ajoute ici les variables page et nb_page à la vue
         return $this->render('SdzBlogBundle:Blog:index.html.twig', array(
                     'articles' => $articles,
                     'page' => $page,
-                    'nombrePage' => ceil(count($articles) / 3)
+                    'nombrePage' => ceil(count($articles) / 1)
         ));
+
+//        // On récupère le service
+//        $antispam = $this->container->get('sdz_blog.antispam');
+//        $text="test@msn.com,test2@msn.com,test3@msn.com";
+//        // Je pars du principe que $text contient le texte d'un message quelconque
+//        if ($antispam->isSpam($text)) {
+//            throw new \Exception('Votre message a été détecté comme spam !');
+//        }
+
+        // Le message n'est pas un spam, on continue l'action…
     }
 
 //  public function voirAction($id)
@@ -374,7 +386,18 @@ class BlogController extends Controller {
 //        ));
 //    }
     //ajouterAction ac le formtype
+
+
     public function ajouterAction() {
+
+        // On teste que l'utilisateur dispose bien du rôle ROLE_AUTEUR(ne pas oublier le use AccessDeniedHttpException)
+        if (!$this->get('security.context')->isGranted('ROLE_AUTEUR')) {
+            // Sinon on déclenche une exception « Accès interdit »
+            throw new AccessDeniedHttpException('Accès limité aux auteurs');
+        }
+
+
+
         $article = new Article;
 
         // On crée le formulaire grâce à l'ArticleType

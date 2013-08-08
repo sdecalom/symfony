@@ -1,26 +1,62 @@
+
+#jms_security_extra:
+#    secure_all_services: false
+#    expressions: true
+
 security:
     encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
+        Symfony\Component\Security\Core\User\User: plaintext #utiliser sha512 pour encodage
+        #Sdz\UserBundle\Entity\User: plaintext  #encodeur plain text car ds la bdd il est plain text
+        Sdz\UserBundle\Entity\User: sha512  #encodeur sha512 pr fosuser
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+#        ROLE_ADMIN:       ROLE_USER
+#        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+        ROLE_ADMIN:       [ROLE_AUTEUR, ROLE_MODERATEUR]       # Un admin hérite des droits d'auteur et de modérateur
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH] # On garde ce rôle superadmin, il nous resservira par la suite
 
     providers:
-        in_memory:
+        in_memory: # le nom du provider on peux mettre n'importe quoi
             memory:
                 users:
                     user:  { password: userpass, roles: [ 'ROLE_USER' ] }
                     admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
-
+        main:
+            #entity: { class: Sdz\UserBundle\Entity\User, property: username }#enregistrer manuel
+            id: fos_user.user_provider.username #par fosuser
     firewalls:
         dev:
-            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/ #on supprime le pare feu pr certain url
             security: false
 
         login:
             pattern:  ^/demo/secured/login$
             security: false
+
+        main_login:
+                # Cette expression régulière permet de prendre /login (mais pas /login_check !)
+                pattern:   ^/login$
+                anonymous: true # On autorise alors les anonymes sur ce pare-feu
+
+        main: #le nom du parefeu
+            pattern:   ^/ #tout le site passe par le pare feu
+            anonymous: true #
+            provider: main #on utilise le provider main qui utilise la table user
+            #provider:  in_memory #provider des utilisateur
+            form_login: #methode d'authenfication via un formulaire
+                login_path: fos_user_security_login
+                check_path: fos_user_security_check
+                #login_path: login #le nom de la route ou il y a le formulaire de connexion
+                #check_path: login_check #le nom de la route ou la prise en charge la soumission du formulaire
+                                        #normalement sf2 va gérer lui meme l'autentification si il y a login_check
+            logout:
+                path:       fos_user_security_logout
+                target:     /blog
+                #path:   logout
+                #target: /blog
+            remember_me:
+                key:    %secret% # %secret% est un paramètre de parameters.yml
 
         secured_area:
             pattern:    ^/demo/secured/
@@ -37,3 +73,5 @@ security:
     access_control:
         - { path: ^/demo/secured/hello/admin/, roles: ROLE_ADMIN }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        #Tous ce qui commence par /admin a besoin du ROLE_ADMIN
+        - { path: ^/blog, roles: ROLE_ADMIN, ip: 127.0.0.1, requires_channel: https }

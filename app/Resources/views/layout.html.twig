@@ -27,9 +27,13 @@
           <h3>Le blog</h3>
           <ul class="nav nav-pills nav-stacked">
             <li><a href="{{ path('sdzblog_accueil') }}">Accueil du blog</a></li>
-            <li><a href="{{ path('sdzblog_ajouter') }}">Ajouter un article</a></li>
+              {# On n'affiche le lien « Ajouter un article » qu'aux auteurs   (et admins, qui héritent du rôle auteur) #}
+              {#{% if is_granted('ROLE_AUTEUR') %}#}
+                <li><a href="{{ path('sdzblog_ajouter') }}">Ajouter un article</a></li>
+              {#{% endif %}#}
           </ul>
-                     
+
+
           {{ render(controller("SdzBlogBundle:Blog:menu", {'nombre': 3})) }}
         </div>
         <div id="content" class="span9">
@@ -50,6 +54,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>
   {% endblock %}
- 
+
+   {# Barre utilisateur #}
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        Connecté en tant que {{ app.user.username }} - <a href="{{ path('fos_user_security_logout') }}">Déconnexion</a>
+    {% else %}
+        <a href="{{ path('fos_user_security_login') }}">Connexion</a>
+    {% endif %}
   </body>
 </html>

@@ -1,0 +1,9 @@
+Sdz\UserBundle\Entity\User:
+    type: entity
+    table: null
+    repositoryClass: Sdz\UserBundle\Entity\UserRepository
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
